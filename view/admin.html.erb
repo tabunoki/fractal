@@ -1,0 +1,77 @@
+<h1>ユーザー一覧</h1>
+
+<form>
+    <table class="table">
+        <tr>
+            <th></th>
+            <th>#</th>
+            <th>ユーザー ID</th>
+            <th>ユーザー名</th>
+            <th>役割</th>
+            <th></th>
+        </tr>
+        <% @users.each do |user| %>
+        <tr>
+            <td><input type="checkbox" value="<%= user[:id]%>" /></td>
+            <td><%= user[:id] %></td>
+            <td><%= user[:name] %></td>
+            <td><%= user[:display] %></td>
+            <td><%= user[:role] %></td>
+            <td>
+                <% if user[:activate] == true %>
+                <input type="button" name="disactivate" value="Deactivate" class="btn btn-inverse" />
+                <% else %>
+                <input type="button" name="activate" value="Activate" class="btn btn-success" />
+                <% end %>
+                <input type="button" name="delete" value="Delete" class="btn btn-danger" />
+            </td>
+        </tr>
+        <% end %>
+    </table>
+    <input type="button" name="reset-pasword" value="Reset Password" class="btn" />
+</form>
+
+
+<h1>ユーザー作成</h1>
+
+<form class="form-horizontal">
+    <div class="control-group">
+        <label class="control-label" for="user-id">User ID</label>
+        <div class="controls">
+            <input type="text" name="user-id" size="60" />
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="user-name">User Name</label>
+        <div class="controls">
+            <input type="text" name="user-name" size="60" />
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="password">Password</label>
+        <div class="controls">
+            <input type="password" name="password" size="60" />
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="password">Password (Confirm)</label>
+        <div class="controls">
+            <input type="password" name="password" size="60" />
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="role">Role</label>
+        <div class="controls">
+            <select name="role" class="span2">
+                <% @roles.each do |role| %>
+                    <option value="<%= role %>"><%= role %></option>
+                <% end %>
+            </select>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <input type="submit" name="create" value="Submit" class="btn">
+        </div>
+    </div>
+</form>

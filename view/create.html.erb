@@ -1,0 +1,40 @@
+<h1>スレッド作成</h1>
+
+
+<% if @alerts.length > 0 %>
+<section class="alert alert-error">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <ul>
+    <% @alerts.each do |alert| %>
+        <li><%= alert %></li>
+    <% end %>
+    </ul>
+</section>
+<% end %>
+
+
+<form id="create-form" class="form-horizontal" action="/create" method="post">
+    <div class="control-group">
+        <label class="control-label" for="subject">Subject</label>
+        <div class="controls">
+            <input type="text" id="subject" name="subject" size="45" class="span4">
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="deadline">Deadline</label>
+        <div class="controls">
+            <input type="text" id="deadline" name="deadline" size="10" class="datepicker span2">
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label" for="body">Body</label>
+        <div class="controls">
+            <textarea id="body" name="body" rows="16" cols="80" class="span8"></textarea>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <input type="submit" name="create" value="Submit" class="btn">
+        </div>
+    </div>
+</form>

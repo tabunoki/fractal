@@ -1,0 +1,52 @@
+<h1><%= @subject %></h1>
+
+<section class="row">
+    <div class="span1">
+        <dl>
+            <dt >No.</dt>
+            <dd><%= @id %></dd>
+        </dl>
+    </div>
+    <div class="span8">
+        <dl>
+            <dt>Body</dt>
+            <dd><%= @body %></dd>
+        </dl>
+        <form class="form pull-right">
+            <input type="submit" name="reply" value="Delete" class="btn btn-danger">
+        </form>
+    </div>
+    <div class="span3">
+        <dl>
+            <dt>Deadline</dt>
+            <dd><%= @deadline %></dd>
+            <dt>Status</dt>
+            <dd><span class="label label-info"><%= @status %></span></dd>
+            <dt>Created</dt>
+            <dd><%= @create_datetime %></dd>
+            <dt>Updated</dt>
+            <dd><%= @update_datetime %></dd>
+        </dl>
+    </div>
+</section>
+
+
+
+<h1>リプライ</h1>
+
+<form action="." method="post" class="reply-form form-horizontal">
+    <div class="control-group">
+        <label class="control-label" for="body">Body</label>
+        <div class="controls">
+            <textarea name="body" cols="80" rows="16" class="span8"></textarea>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls btn-group">
+            <input type="submit" name="reply" value="Reply" class="btn">
+            <input type="submit" name="close" value="Close" class="btn btn-inverse">
+        </div>
+    </div>
+    
+</form>
+
