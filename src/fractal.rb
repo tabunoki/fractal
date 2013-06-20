@@ -22,7 +22,7 @@ class MainController < Ramaze::Controller
   def login
     redirect_referer if logged_in?
     return unless request.post?
-    user_login(request.subset(:name, :plane_password))
+    user_login(request.subset('user-id', 'plane-password'))
     redirect MainController.r(:index)
     
   end
@@ -41,6 +41,8 @@ class MainController < Ramaze::Controller
   end
 
   # スレッド作成
+  # スレッドの新規作成フォームを提供し、
+  # スレッドの新規作成処理を実装します。
   def create
     submit = request['submit']
     subject = request['subject']
@@ -49,6 +51,7 @@ class MainController < Ramaze::Controller
     
     @alerts = Array.new
 
+    # スレッドの新規作成
     if submit && submit.equals('create')
       if (subject && body && deadline) == false
         @alerts.push('必須項目を入力して下さい。')
@@ -57,7 +60,6 @@ class MainController < Ramaze::Controller
       #if deadline = true && deadline 
       #  @alerts.push('期限は日付を入力して下さい。')
       #end
-      p deadline
       
       if @alerts.length = 0
         begin
@@ -100,17 +102,42 @@ class MainController < Ramaze::Controller
 
   # 管理
   def admin
-    name = request['name']
-    display = request['display']
+    submit = request['submit']
+    user_id = request['user-id']
+    user_name = request['user-name']
     password = request['password']
+    password_confirm = request['password-confirm']
     role = request['role']
     
-    if name && display && password && role
-      @@db[:user].insert(
-        :user_name => name,
-        :display_name => display,
-        :password => Digest::SHA512.hexdigest(password),
-        :role_id => role)
+    @alerts = Array.new
+    
+    p "---------------------------------------------"
+    p submit
+    p "---------------------------------------------"
+    
+    # ユーザーの作成
+    if submit && submit.equals('create')
+      if (user_id && user_name && password && password_confirm && role) == false
+        @alerts.push('必須項目を入力して下さい。')
+      end
+
+      if password.equals(password_confirm) == false
+        @alerts.push('パスワードが一致しません。')
+      end
+
+      if @alerts.length = 0
+        begin
+          @@db[:user].insert(
+            :user_id => user_id,
+            :user_name => user_name,
+            :display_name => display,
+            :password => Digest::SHA512.hexdigest(password),
+            :role_id => role)
+        rescue => ex
+        p ex.message
+          @alerts.put(ex.message)
+        end
+      end
     end
 
     @users = @@db[:user].order(:id.desc).all
@@ -132,9 +159,9 @@ class User
   
   def self.authenticate(creds)
 
-    password = Digest::SHA512.hexdigest(creds['plane_password'])
+    password = Digest::SHA512.hexdigest(creds['plane-password'])
     
-    dataset = @@db[:user].filter(:user_name => creds['name'])
+    dataset = @@db[:user].filter(:user_id => creds['user-id'])
 
     dataset.each do |row|
       if row[:password] == password

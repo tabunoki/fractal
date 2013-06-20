@@ -20,3 +20,7 @@ footer {
     padding: 0.5em;
     text-align: center;
 }
+input[type="submit"] {
+    text-transform: capitalize;
+}
+
