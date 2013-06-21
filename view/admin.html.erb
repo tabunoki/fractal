@@ -1,15 +1,23 @@
-<% @alerts.each do |alert| %>
+<% @errors.each do |error| %>
 <section class="alert alert-error">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     <strong>Error!</strong>
-    <%= alert %>
+    <%= error %>
+</section>
+<% end %>
+
+<% @infos.each do |info| %>
+<section class="alert alert-info">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Infomation:</strong>
+    <%= info %>
 </section>
 <% end %>
 
 
 <h1>ユーザー一覧</h1>
 
-<form>
+<form action="/admin" method="post">
     <table class="table">
         <tr>
             <th></th>
@@ -30,11 +38,11 @@
             <td><%= user[:role] %></td>
             <td>
                 <% if user[:activate] == true %>
-                <input type="button" name="disactivate" value="Deactivate" class="btn btn-inverse" />
+                <input type="submit" name="submit" value="deactivate" class="btn btn-inverse" />
                 <% else %>
-                <input type="button" name="activate" value="Activate" class="btn btn-success" />
+                <input type="submit" name="submit" value="activate" class="btn btn-success" />
                 <% end %>
-                <input type="button" name="delete" value="Delete" class="btn btn-danger" />
+                <input type="submit" name="submit" value="delete" class="btn btn-danger" />
             </td>
         </tr>
         <% end %>

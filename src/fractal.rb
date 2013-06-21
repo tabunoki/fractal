@@ -7,7 +7,8 @@ class MainController < Ramaze::Controller
   map '/'
   
   engine :ERB
-  set_layout 'default' => [:login, :logout, :index, :create, :thread, :config, :admin, :hello]
+  set_layout 'default' => [:login, :logout, :index, :create, :thread, :config, :admin]
+  set_layout 'error' => [:error_404]
 
   helper :user
 
@@ -49,19 +50,19 @@ class MainController < Ramaze::Controller
     body = request['body']
     deadline = request['deadline']
     
-    @alerts = Array.new
+    @errors = Array.new
 
     # スレッドの新規作成
     if submit && submit == 'create'
       if (subject && body && deadline) == false
-        @alerts.push('必須項目を入力して下さい。')
+        @errors.push('必須項目を入力して下さい。')
       end
       
       #if deadline = true && deadline 
-      #  @alerts.push('期限は日付を入力して下さい。')
+      #  @errors.push('期限は日付を入力して下さい。')
       #end
       
-      if @alerts.length = 0
+      if @errors.length = 0
         begin
           @@db[:thread].insert(
             :subject => subject,
@@ -72,7 +73,7 @@ class MainController < Ramaze::Controller
           
           redirect "/", :status => 303
         rescue => ex
-          @alerts.push(ex.message)
+          @errors.push(ex.message)
         end
       end
     end
@@ -109,19 +110,20 @@ class MainController < Ramaze::Controller
     password_confirm = request['password-confirm']
     role = request['role']
     
-    @alerts = Array.new
+    @errors = Array.new
+    @infos = Array.new
     
     # ユーザーの作成
     if submit && submit == 'create'
       if user_id.empty? || user_name.empty? || password.empty? || password_confirm.empty? || role.empty?
-        @alerts.push('必須項目を入力して下さい。')
+        @errors.push('必須項目を入力して下さい。')
       end
 
       if (password == password_confirm) == false
-        @alerts.push('パスワードが一致しません。')
+        @errors.push('パスワードが一致しません。')
       end
 
-      if @alerts.length == 0
+      if @errors.length == 0
         begin
           @@db[:user].insert(
             :user_id => user_id,
@@ -130,20 +132,32 @@ class MainController < Ramaze::Controller
             :role => role)
         rescue => ex
         p ex.message
-          @alerts.push(ex.message)
+          @errors.push(ex.message)
         end
       end
+
+    elsif submit && submit == 'activate'
+      @infos.push("ユーザー @test を有効にしました。")
+    elsif submit && submit == 'deactivate'
+      @infos.push("ユーザー @test を無効にしました。")
+    elsif submit && submit == 'delete'
+      @infos.push("ユーザー @test を削除しました。")
     end
+    
 
     @users = @@db[:user].order(:id.desc).all
     @roles = Code::ROLE.values
   end
   
-  # テスト画面
-  def hello(name, world)
-    "Hello #{name}. Welcome to #{world} World! test"
+  
+  def self.action_missing(path)
+    return if path == '/error_404'
+    try_resolve('/error_404')
   end
 
+  def error_404
+    #render_file("#{Ramaze.options.views[0]}/error_404.xhtml")
+  end
 
 end
 
