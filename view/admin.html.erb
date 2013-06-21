@@ -1,11 +1,8 @@
-<% if @alerts.length > 0 %>
+<% @alerts.each do |alert| %>
 <section class="alert alert-error">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <ul>
-    <% @alerts.each do |alert| %>
-        <li><%= alert %></li>
-    <% end %>
-    </ul>
+    <strong>Error!</strong>
+    <%= alert %>
 </section>
 <% end %>
 
@@ -19,6 +16,7 @@
             <th>#</th>
             <th>ユーザー ID</th>
             <th>ユーザー名</th>
+            <th>メールアドレス</th>
             <th>役割</th>
             <th></th>
         </tr>
@@ -26,8 +24,9 @@
         <tr>
             <td><input type="checkbox" value="<%= user[:id]%>" /></td>
             <td><%= user[:id] %></td>
-            <td><%= user[:name] %></td>
-            <td><%= user[:display] %></td>
+            <td><%= user[:user_id] %></td>
+            <td><%= user[:user_name] %></td>
+            <td><%= user[:mail_address] %></td>
             <td><%= user[:role] %></td>
             <td>
                 <% if user[:activate] == true %>

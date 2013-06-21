@@ -52,7 +52,7 @@ class MainController < Ramaze::Controller
     @alerts = Array.new
 
     # スレッドの新規作成
-    if submit && submit.equals('create')
+    if submit && submit == 'create'
       if (subject && body && deadline) == false
         @alerts.push('必須項目を入力して下さい。')
       end
@@ -72,7 +72,7 @@ class MainController < Ramaze::Controller
           
           redirect "/", :status => 303
         rescue => ex
-          @alerts.put(ex.message)
+          @alerts.push(ex.message)
         end
       end
     end
@@ -111,31 +111,26 @@ class MainController < Ramaze::Controller
     
     @alerts = Array.new
     
-    p "---------------------------------------------"
-    p submit
-    p "---------------------------------------------"
-    
     # ユーザーの作成
-    if submit && submit.equals('create')
-      if (user_id && user_name && password && password_confirm && role) == false
+    if submit && submit == 'create'
+      if user_id.empty? || user_name.empty? || password.empty? || password_confirm.empty? || role.empty?
         @alerts.push('必須項目を入力して下さい。')
       end
 
-      if password.equals(password_confirm) == false
+      if (password == password_confirm) == false
         @alerts.push('パスワードが一致しません。')
       end
 
-      if @alerts.length = 0
+      if @alerts.length == 0
         begin
           @@db[:user].insert(
             :user_id => user_id,
             :user_name => user_name,
-            :display_name => display,
             :password => Digest::SHA512.hexdigest(password),
-            :role_id => role)
+            :role => role)
         rescue => ex
         p ex.message
-          @alerts.put(ex.message)
+          @alerts.push(ex.message)
         end
       end
     end
