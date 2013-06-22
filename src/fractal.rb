@@ -130,8 +130,10 @@ class MainController < Ramaze::Controller
             :user_name => user_name,
             :password => Digest::SHA512.hexdigest(password),
             :role => role)
+          
+          @infos.push("ユーザー user_id を作成しました。")
+          
         rescue => ex
-        p ex.message
           @errors.push(ex.message)
         end
       end
