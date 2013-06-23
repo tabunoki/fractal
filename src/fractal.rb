@@ -74,7 +74,7 @@ class MainController < Ramaze::Controller
       #  @errors.push('期限は日付を入力して下さい。')
       #end
       
-      if @errors.length = 0
+      if @errors.length == 0
         begin
           @@db[:thread].insert(
             :subject => subject,
