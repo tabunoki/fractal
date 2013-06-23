@@ -21,10 +21,22 @@ class MainController < Ramaze::Controller
 
   # ログイン
   def login
-    redirect_referer if logged_in?
-    return unless request.post?
-    user_login(request.subset('user-id', 'plane-password'))
-    redirect MainController.r(:index)
+  
+    @warnings = Array.new
+  
+    if logged_in?
+      redirect_referer 
+    end
+    
+    unless request.post?
+      return
+    end
+    
+    unless user_login(request.subset('user-id', 'plane-password'))
+      @warnings.push("ユーザーID とパスワードが一致しません。")
+    else
+      redirect MainController.r(:index)
+    end
     
   end
 
@@ -111,7 +123,7 @@ class MainController < Ramaze::Controller
     role = request['role']
     
     @errors = Array.new
-    @infos = Array.new
+    @infomations = Array.new
     
     # ユーザーの作成
     if submit && submit == 'create'
@@ -131,7 +143,7 @@ class MainController < Ramaze::Controller
             :password => Digest::SHA512.hexdigest(password),
             :role => role)
           
-          @infos.push("ユーザー user_id を作成しました。")
+          @infomations.push("ユーザー user_id を作成しました。")
           
         rescue => ex
           @errors.push(ex.message)
@@ -139,11 +151,11 @@ class MainController < Ramaze::Controller
       end
 
     elsif submit && submit == 'activate'
-      @infos.push("ユーザー @test を有効にしました。")
+      @infomations.push("ユーザー @test を有効にしました。")
     elsif submit && submit == 'deactivate'
-      @infos.push("ユーザー @test を無効にしました。")
+      @infomations.push("ユーザー @test を無効にしました。")
     elsif submit && submit == 'delete'
-      @infos.push("ユーザー @test を削除しました。")
+      @infomations.push("ユーザー @test を削除しました。")
     end
     
 
