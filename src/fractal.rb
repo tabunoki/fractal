@@ -32,7 +32,7 @@ class MainController < Ramaze::Controller
       return
     end
     
-    unless user_login(request.subset('user-id', 'plane-password'))
+    unless user_login(request.subset('user-name', 'plane-password'))
       @warnings.push("ユーザーID とパスワードが一致しません。")
     else
       redirect MainController.r(:index)
@@ -80,7 +80,7 @@ class MainController < Ramaze::Controller
             :subject => subject,
             :body => body,
             :deadline => deadline,
-            :user_name => 1,
+            :user_id => 1,
             :status => Code::STATUS[:new])
           
           redirect "/", :status => 303
@@ -116,8 +116,8 @@ class MainController < Ramaze::Controller
   # 管理
   def admin
     submit = request['submit']
-    user_id = request['user-id']
     user_name = request['user-name']
+    display_name = request['display-name']
     password = request['password']
     password_confirm = request['password-confirm']
     role = request['role']
@@ -127,7 +127,7 @@ class MainController < Ramaze::Controller
     
     # ユーザーの作成
     if submit && submit == 'create'
-      if user_id.empty? || user_name.empty? || password.empty? || password_confirm.empty? || role.empty?
+      if user_name.empty? || display_name.empty? || password.empty? || password_confirm.empty? || role.empty?
         @errors.push('必須項目を入力して下さい。')
       end
 
@@ -138,12 +138,12 @@ class MainController < Ramaze::Controller
       if @errors.length == 0
         begin
           @@db[:user].insert(
-            :user_id => user_id,
             :user_name => user_name,
+            :display_name => display_name,
             :password => Digest::SHA512.hexdigest(password),
             :role => role)
           
-          @infomations.push("ユーザー user_id を作成しました。")
+          @infomations.push("ユーザー user_name を作成しました。")
           
         rescue => ex
           @errors.push(ex.message)
@@ -165,7 +165,9 @@ class MainController < Ramaze::Controller
   
   
   def self.action_missing(path)
-    return if path == '/error_404'
+    if path == '/error_404'
+      return
+    end
     try_resolve('/error_404')
   end
 
@@ -184,7 +186,7 @@ class User
 
     password = Digest::SHA512.hexdigest(creds['plane-password'])
     
-    dataset = @@db[:user].filter(:user_id => creds['user-id'])
+    dataset = @@db[:user].filter(:user_name => creds['user-name'])
 
     dataset.each do |row|
       if row[:password] == password

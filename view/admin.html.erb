@@ -32,8 +32,8 @@
         <tr>
             <td><input type="checkbox" value="<%= user[:id]%>" /></td>
             <td><%= user[:id] %></td>
-            <td><%= user[:user_id] %></td>
             <td><%= user[:user_name] %></td>
+            <td><%= user[:display_name] %></td>
             <td><%= user[:mail_address] %></td>
             <td><%= user[:role] %></td>
             <td>
@@ -55,15 +55,15 @@
 
 <form class="form-horizontal" action="/admin" method="post">
     <div class="control-group">
-        <label class="control-label" for="user-id">User ID</label>
+        <label class="control-label" for="user-name">User ID</label>
         <div class="controls">
-            <input type="text" name="user-id" size="60" />
+            <input type="text" name="user-name" size="60" />
         </div>
     </div>
     <div class="control-group">
-        <label class="control-label" for="user-name">User Name</label>
+        <label class="control-label" for="display-name">User Name</label>
         <div class="controls">
-            <input type="text" name="user-name" size="60" />
+            <input type="text" name="display-name" size="60" />
         </div>
     </div>
     <div class="control-group">
