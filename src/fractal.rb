@@ -54,8 +54,7 @@ class MainController < Ramaze::Controller
   end
 
   # スレッド作成
-  # スレッドの新規作成フォームを提供し、
-  # スレッドの新規作成処理を実装します。
+  # スレッドの新規作成フォームを提供し、スレッドの新規作成処理を実装します。
   def create
     submit = request['submit']
     subject = request['subject']
@@ -92,9 +91,34 @@ class MainController < Ramaze::Controller
   end
 
   # スレッド詳細
+  # スレッドの詳細を表示し、スレッドへのリプライを実装します。
   def thread(id)
     @id= id
 
+    submit = request['submit']
+    body = request['body']
+
+    @errors = Array.new
+    @warnings = Array.new
+    
+    # リプライの追加
+    if submit && submit == 'reply'
+      if body.empty?
+        @errors.push('リプライする時は本文を必ず入力して下さい。')
+      end
+      
+      if @errors.length == 0
+        begin
+          @@db[:reply].insert(
+            :body => body,
+            :thread_id => id,
+            :user_id => 1)
+
+        rescue => ex
+          @errors.push(ex.message)
+        end
+      end
+    end
     
     # スレッド詳細の取得
     dataset = @@db[:thread].filter(:id => id)
@@ -106,6 +130,9 @@ class MainController < Ramaze::Controller
       @create_datetime = row[:create_datetime]
       @update_datetime = row[:update_datetime]
     end
+    
+    # リプライの取得
+    @replys = @@db[:reply].filter(:thread_id => id).order(:id.asc).all
   end
 
   # 設定

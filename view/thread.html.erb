@@ -1,3 +1,20 @@
+<% @errors.each do |error| %>
+<section class="alert alert-error">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Error!</strong><br />
+    <%= error %>
+</section>
+<% end %>
+
+<% @warnings.each do |warning| %>
+<section class="alert">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Warning!</strong>
+    <%= warning %>
+</section>
+<% end %>
+
+
 <h1><%= @subject %></h1>
 
 <section class="row">
@@ -30,11 +47,37 @@
     </div>
 </section>
 
+<% @replys.each_with_index do |reply, i| %>
+<section class="row">
+    <div class="span1">
+        <dl>
+            <dt >#</dt>
+            <dd><%= i + 1 %></dd>
+        </dl>
+    </div>
+    <div class="span8">
+        <dl>
+            <dt>Reply</dt>
+            <dd><%= reply[:body].gsub(/\r\n|\r|\n/, "<br />") %></dd>
+        </dl>
+    </div>
+    <div class="span3">
+        <dl>
+            <dt>ID</dt>
+            <dd><%= reply[:id] %></dd>
+            <dt>User</dt>
+            <dd><%= reply[:user_id] %></dd>
+            <dt>Created</dt>
+            <dd><%= reply[:create_datetime] %></dd>
+        </dl>
+    </div>
 
+</section>
+<% end %>
 
 <h1>リプライ</h1>
 
-<form action="." method="post" class="reply-form form-horizontal">
+<form action="/thread/<%= @id %>" method="post" class="reply-form form-horizontal">
     <div class="control-group">
         <label class="control-label" for="body">Body</label>
         <div class="controls">
@@ -43,8 +86,8 @@
     </div>
     <div class="control-group">
         <div class="controls btn-group">
-            <input type="submit" name="reply" value="Reply" class="btn">
-            <input type="submit" name="close" value="Close" class="btn btn-inverse">
+            <input type="submit" name="submit" value="reply" class="btn">
+            <input type="submit" name="submit" value="close" class="btn btn-inverse">
         </div>
     </div>
     
