@@ -3,9 +3,9 @@
 # = メインコントローラー
 # Fractalアプリケーションのメインコントローラーです
 class MainController < Ramaze::Controller
-  
+
   map '/'
-  
+
   engine :ERB
   set_layout 'default' => [:login, :logout, :index, :create, :thread, :config, :admin]
   set_layout 'error' => [:error_404]
@@ -16,28 +16,35 @@ class MainController < Ramaze::Controller
   @@db = Sequel.connect('mysql://db_fractal_user:123456@127.0.0.1/db_fractal')
 
   before(:index, :logout, :create, :thread, :config, :admin) do
-    redirect rs(:login) unless logged_in?
+    unless logged_in?
+      redirect rs(:login)
+    else
+      @user_name = session['user-name']
+    end
   end
 
   # ログイン
   def login
-  
+
     @warnings = Array.new
-  
+
     if logged_in?
-      redirect_referer 
+      redirect_referer
     end
-    
+
     unless request.post?
       return
     end
-    
-    unless user_login(request.subset('user-name', 'plane-password'))
+
+    creds = user_login(request.subset('user-name', 'plane-password'))
+
+    unless creds
       @warnings.push("ユーザーID とパスワードが一致しません。")
     else
+      session['user-name'] = creds[:credentials]['user-name']
       redirect MainController.r(:index)
     end
-    
+
   end
 
   # ログアウト
@@ -45,7 +52,7 @@ class MainController < Ramaze::Controller
     user_logout
     redirect_referer
   end
-  
+
   # スレッド一覧
   def index
 
@@ -60,7 +67,7 @@ class MainController < Ramaze::Controller
     subject = request['subject']
     body = request['body']
     deadline = request['deadline']
-    
+
     @errors = Array.new
 
     # スレッドの新規作成
@@ -68,11 +75,11 @@ class MainController < Ramaze::Controller
       if (subject && body && deadline) == false
         @errors.push('必須項目を入力して下さい。')
       end
-      
-      #if deadline = true && deadline 
+
+      #if deadline = true && deadline
       #  @errors.push('期限は日付を入力して下さい。')
       #end
-      
+
       if @errors.length == 0
         begin
           @@db[:thread].insert(
@@ -81,7 +88,7 @@ class MainController < Ramaze::Controller
             :deadline => deadline,
             :user_id => 1,
             :status => Code::STATUS[:new])
-          
+
           redirect "/", :status => 303
         rescue => ex
           @errors.push(ex.message)
@@ -100,13 +107,13 @@ class MainController < Ramaze::Controller
 
     @errors = Array.new
     @warnings = Array.new
-    
+
     # リプライの追加
     if submit && submit == 'reply'
       if body.empty?
         @errors.push('リプライする時は本文を必ず入力して下さい。')
       end
-      
+
       if @errors.length == 0
         begin
           @@db[:reply].insert(
@@ -119,7 +126,7 @@ class MainController < Ramaze::Controller
         end
       end
     end
-    
+
     # スレッド詳細の取得
     dataset = @@db[:thread].filter(:id => id)
     dataset.each do |row|
@@ -130,7 +137,7 @@ class MainController < Ramaze::Controller
       @create_datetime = row[:create_datetime]
       @update_datetime = row[:update_datetime]
     end
-    
+
     # リプライの取得
     @replys = @@db[:reply].filter(:thread_id => id).order(:id.asc).all
   end
@@ -148,10 +155,10 @@ class MainController < Ramaze::Controller
     password = request['password']
     password_confirm = request['password-confirm']
     role = request['role']
-    
+
     @errors = Array.new
     @infomations = Array.new
-    
+
     # ユーザーの作成
     if submit && submit == 'create'
       if user_name.empty? || display_name.empty? || password.empty? || password_confirm.empty? || role.empty?
@@ -169,9 +176,9 @@ class MainController < Ramaze::Controller
             :display_name => display_name,
             :password => Digest::SHA512.hexdigest(password),
             :role => role)
-          
+
           @infomations.push("ユーザー user_name を作成しました。")
-          
+
         rescue => ex
           @errors.push(ex.message)
         end
@@ -184,13 +191,13 @@ class MainController < Ramaze::Controller
     elsif submit && submit == 'delete'
       @infomations.push("ユーザー @test を削除しました。")
     end
-    
+
 
     @users = @@db[:user].order(:id.desc).all
     @roles = Code::ROLE.values
   end
-  
-  
+
+
   def self.action_missing(path)
     if path == '/error_404'
       return
@@ -204,15 +211,16 @@ class MainController < Ramaze::Controller
 
 end
 
+
 # ユーザー認証を管理します
 class User
 
   @@db = Sequel.connect('mysql://db_fractal_user:123456@127.0.0.1/db_fractal')
-  
+
   def self.authenticate(creds)
 
     password = Digest::SHA512.hexdigest(creds['plane-password'])
-    
+
     dataset = @@db[:user].filter(:user_name => creds['user-name'])
 
     dataset.each do |row|
