@@ -56,7 +56,7 @@ class MainController < Ramaze::Controller
   # スレッド一覧
   def index
 
-    @threads = @@db[:thread].order(:create_datetime.desc).all
+    @threads = @@db[:thread].graph(:user, :id => :user_id).order(:create_datetime.desc).all
 
   end
 

@@ -12,13 +12,13 @@
     </tr>
     <% @threads.each do |thread| %>
     <tr>
-        <td class="id"><%= thread[:id] %></td>
-        <td class="status"><%= thread[:status] %></td>
-        <td class="subject"><a href="thread/<%= thread[:id] %>"><%= thread[:subject] %></a></td>
-        <td class="user"><%= thread[:display_name] %></td>
-        <td class="deadline"><%= thread[:deadline].strftime("%Y-%m-%d") %></td>
-        <td class="create-datetime"><%= thread[:create_datetime].strftime("%Y-%m-%d %H:%M:%S") %></td>
-        <td class="update-datetime"><%= thread[:update_datetime] %></td>
+        <td class="id"><%= thread[:thread][:id] %></td>
+        <td class="status"><%= thread[:thread][:status] %></td>
+        <td class="subject"><a href="thread/<%= thread[:thread][:id] %>"><%= thread[:thread][:subject] %></a></td>
+        <td class="user"><%= thread[:user][:display_name] %></td>
+        <td class="deadline"><%= thread[:thread][:deadline].strftime("%Y-%m-%d") %></td>
+        <td class="create-datetime"><%= thread[:thread][:create_datetime].strftime("%Y-%m-%d %H:%M:%S") %></td>
+        <td class="update-datetime"><%= thread[:thread][:update_datetime] %></td>
     </tr>
     <% end %>
 </table>
