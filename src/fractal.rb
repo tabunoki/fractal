@@ -42,7 +42,7 @@ class MainController < Ramaze::Controller
       @warnings.push("ユーザーID とパスワードが一致しません。")
     else
       session['user-name'] = creds[:credentials]['user-name']
-      redirect MainController.r(:index)
+      redirect "/index/1", :status => 303
     end
 
   end
@@ -54,9 +54,17 @@ class MainController < Ramaze::Controller
   end
 
   # スレッド一覧
-  def index
+  def index(page)
+  
+    @page = [page.to_i, 1].max
 
-    @threads = @@db[:thread].graph(:user, :id => :user_id).order(:create_datetime.desc).all
+    @threads = @@db[:thread].graph(:user, :id => :user_id).order(:create_datetime.desc).limit(20, (@page - 1) * 20)
+    @max_page = (@@db[:thread].count + 20 - 1) / 20
+    
+    @start_page = [@page - 5, 1].max
+    @end_page = [@page + 5, @max_page].min
+    @prev_page = @page - 1
+    @next_page = @page + 1
 
   end
 
