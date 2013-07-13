@@ -42,7 +42,7 @@ class MainController < Ramaze::Controller
       @warnings.push("ユーザーID とパスワードが一致しません。")
     else
       session['user-name'] = creds[:credentials]['user-name']
-      redirect "/index/1", :status => 303
+      redirect MainController.r(:index)
     end
 
   end
@@ -54,7 +54,7 @@ class MainController < Ramaze::Controller
   end
 
   # スレッド一覧
-  def index(page)
+  def index(page = 1)
   
     @page = [page.to_i, 1].max
 
@@ -205,7 +205,7 @@ class MainController < Ramaze::Controller
     @roles = Code::ROLE.values
   end
 
-
+  # パスが見つからない
   def self.action_missing(path)
     if path == '/error_404'
       return
