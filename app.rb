@@ -10,6 +10,7 @@ require 'mysql'
 require 'sequel'
 require 'logger'
 
+require './src/property'
 require './src/fractal'
 require './src/code'
 

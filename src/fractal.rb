@@ -13,7 +13,7 @@ class MainController < Ramaze::Controller
   helper :user
 
   # データベースコネクション
-  @@db = Sequel.connect('mysql://db_fractal_user:123456@127.0.0.1/db_fractal')
+  @@db = Sequel.connect(Property::CONNECTION_STRING)
 
   before(:index, :logout, :create, :thread, :config, :admin) do
     unless logged_in?
@@ -58,11 +58,11 @@ class MainController < Ramaze::Controller
   
     @page = [page.to_i, 1].max
 
-    @threads = @@db[:thread].graph(:user, :id => :user_id).order(:create_datetime.desc).limit(20, (@page - 1) * 20)
-    @max_page = (@@db[:thread].count + 20 - 1) / 20
+    @threads = @@db[:thread].graph(:user, :id => :user_id).order(:create_datetime.desc).limit(Property::THREAD_PER_PAGE, (@page - 1) * Property::THREAD_PER_PAGE)
+    @max_page = (@@db[:thread].count + Property::THREAD_PER_PAGE - 1) / Property::THREAD_PER_PAGE
     
-    @start_page = [@page - 5, 1].max
-    @end_page = [@page + 5, @max_page].min
+    @start_page = [@page - Property::PAGINATION, 1].max
+    @end_page = [@page + Property::PAGINATION, @max_page].min
     @prev_page = @page - 1
     @next_page = @page + 1
 
@@ -223,7 +223,7 @@ end
 # ユーザー認証を管理します
 class User
 
-  @@db = Sequel.connect('mysql://db_fractal_user:123456@127.0.0.1/db_fractal')
+  @@db = Sequel.connect(Property::CONNECTION_STRING)
 
   def self.authenticate(creds)
 
