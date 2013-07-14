@@ -26,7 +26,7 @@ delimiter $$
 
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_name` varchar(45) NOT NULL,
+  `user_name` varchar(45) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `display_name` varchar(45) NOT NULL,
   `mail_address` varchar(100) DEFAULT NULL,
   `password` varchar(128) NOT NULL,

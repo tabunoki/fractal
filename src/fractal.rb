@@ -58,7 +58,10 @@ class MainController < Ramaze::Controller
   
     @page = [page.to_i, 1].max
 
-    @threads = @@db[:thread].graph(:user, :id => :user_id).order(:create_datetime.desc).limit(Property::THREAD_PER_PAGE, (@page - 1) * Property::THREAD_PER_PAGE)
+    @threads = @@db[:thread]
+      .graph(:user, :id => :user_id)
+      .order(:create_datetime.desc)
+      .limit(Property::THREAD_PER_PAGE, (@page - 1) * Property::THREAD_PER_PAGE)
     @max_page = (@@db[:thread].count + Property::THREAD_PER_PAGE - 1) / Property::THREAD_PER_PAGE
     
     @start_page = [@page - Property::PAGINATION, 1].max
