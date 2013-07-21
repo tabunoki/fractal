@@ -93,12 +93,15 @@ class MainController < Ramaze::Controller
 
       if @errors.length == 0
         begin
+          
+          user = @@db[:user].where(:user_name => session['user-name']).first
+          
           @@db[:thread].insert(
             :subject => subject,
             :body => body,
             :deadline => deadline,
-            :user_id => 1,
-            :status => Code::STATUS[:new])
+            :user_id => user[:id],
+            :status => user[:role] == Code::ROLE[:developer] ? Code::STATUS[:notice] : Code::STATUS[:new])
 
           redirect "/", :status => 303
         rescue => ex
@@ -188,7 +191,7 @@ class MainController < Ramaze::Controller
             :password => Digest::SHA512.hexdigest(password),
             :role => role)
 
-          @infomations.push("ユーザー user_name を作成しました。")
+          @infomations.push("ユーザー #{user_name} を作成しました。")
 
         rescue => ex
           @errors.push(ex.message)
