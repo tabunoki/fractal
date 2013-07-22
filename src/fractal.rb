@@ -142,18 +142,15 @@ class MainController < Ramaze::Controller
     end
 
     # スレッド詳細の取得
-    dataset = @@db[:thread].filter(:id => id)
-    dataset.each do |row|
-      @subject = row[:subject]
-      @body = row[:body].gsub(/\r\n|\r|\n/, "<br />")
-      @deadline = row[:deadline]
-      @status = row[:status]
-      @create_datetime = row[:create_datetime]
-      @update_datetime = row[:update_datetime]
-    end
+    @thread = @@db.from(:thread).where(:id => id).first
+    @thread[:body] = @thread[:body].gsub(/\r\n|\r|\n/, "<br />")
+    @thread[:user] = @@db.from(:user).where(:id => @thread[:user_id]).first[:display_name]
 
     # リプライの取得
-    @replys = @@db[:reply].filter(:thread_id => id).order(:id.asc).all
+    @replys = @@db.from(:reply)
+        .graph(:user, :id => :user_id)
+        .where(:thread_id => id)
+        .order(:id.asc).all
   end
 
   # 設定

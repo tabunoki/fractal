@@ -15,30 +15,30 @@
 <% end %>
 
 
-<h1><%= @subject %></h1>
+<h1><%= @thread[:subject] %></h1>
 
 <section class="row">
     <div class="span1">
         <dl>
             <dt >No.</dt>
-            <dd><%= @id %></dd>
+            <dd><%= @thread[:id] %></dd>
         </dl>
     </div>
     <div class="span8">
         <dl>
-            <p><%= @body %></p>
+            <p><%= @thread[:body] %></p>
         </dl>
     </div>
     <div class="span3">
         <dl>
             <dt>Deadline</dt>
-            <dd><%= @deadline %></dd>
+            <dd><%= @thread[:deadline] %></dd>
             <dt>Status</dt>
-            <dd><span class="label label-info"><%= @status %></span></dd>
+            <dd><span class="label label-info"><%= @thread[:status] %></span></dd>
+            <dt>User</dt>
+            <dd><%= @thread[:user] %></dd>
             <dt>Created</dt>
-            <dd><%= @create_datetime %></dd>
-            <dt>Updated</dt>
-            <dd><%= @update_datetime %></dd>
+            <dd><%= @thread[:create_datetime] %></dd>
         </dl>
     </div>
 </section>
@@ -48,22 +48,20 @@
     <div class="span1">
         <dl>
             <dt >#</dt>
-            <dd><%= i + 1 %></dd>
+            <dd><%= reply[:reply][:id] %></dd>
         </dl>
     </div>
     <div class="span8">
         <dl>
-            <p><%= reply[:body].gsub(/\r\n|\r|\n/, "<br />") %></p>
+            <p><%= reply[:reply][:body].gsub(/\r\n|\r|\n/, "<br />") %></p>
         </dl>
     </div>
     <div class="span3">
         <dl>
-            <dt>ID</dt>
-            <dd><%= reply[:id] %></dd>
             <dt>User</dt>
-            <dd><%= reply[:user_id] %></dd>
+            <dd><%= reply[:user][:display_name] %></dd>
             <dt>Created</dt>
-            <dd><%= reply[:create_datetime] %></dd>
+            <dd><%= reply[:reply][:create_datetime] %></dd>
         </dl>
     </div>
 
