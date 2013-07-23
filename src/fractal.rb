@@ -130,15 +130,36 @@ class MainController < Ramaze::Controller
 
       if @errors.length == 0
         begin
-          @@db[:reply].insert(
-            :body => body,
-            :thread_id => id,
-            :user_id => 1)
+          @@db.transaction do
+            @@db.from(:reply).insert(
+              :body => body,
+              :thread_id => id,
+              :user_id => 1)
+            
+            case @@db.from(:thread).where(:id => id).first[:status]
+              when Code::STATUS[:new]
+                @@db.from(:thread).where(:id => id).update(:status => Code::STATUS[:reply])
+              when Code::STATUS[:reply]
+                @@db.from(:thread).where(:id => id).update(:status => Code::STATUS[:issue])
+              when Code::STATUS[:issue]
+                @@db.from(:thread).where(:id => id).update(:status => Code::STATUS[:reply])
+              else
+            end
+          end
 
         rescue => ex
           @errors.push(ex.message)
         end
       end
+    end
+    
+    if submit && submit == 'close'
+        begin
+          @@db.from(:thread).where(:id => id).update(:status => Code::STATUS[:close])
+
+        rescue => ex
+          @errors.push(ex.message)
+        end
     end
 
     # スレッド詳細の取得
